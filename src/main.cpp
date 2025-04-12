@@ -1,26 +1,17 @@
 #include <Arduino.h>
-#define LED 2
-// put function declarations here:
-int myFunction(int, int);
+#include <Adafruit_GFX.h>
+#include <Adafruit_ST7789.h>
+#include <ESP8266WiFi.h>
+#include <ESP8266HTTPClient.h>
+#include "config.h" //файл конфигурации с API ключом и данными WiFi
+
 
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
-  pinMode(LED, OUTPUT);
-  int result = myFunction(2, 3);
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-  digitalWrite(LED, HIGH);
-  Serial.println("LED is on");
-  delay(1000);
-  digitalWrite(LED, LOW);
-  Serial.println("LED is off");
-  delay(1000);
-}
 
-// put function definitions here:
-int myFunction(int x, int y) {
-  return x + y;
 }

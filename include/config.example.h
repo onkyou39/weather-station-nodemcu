@@ -8,4 +8,8 @@
 // API ключи
 #define API_KEY       "your-api-key"
 
+// Геолокация
+#define LATITUDE   "your-location-latitude" //широта в градусах
+#define LONGITUDE   "your-location-longitude" //долгота в градусах
+
 #endif
