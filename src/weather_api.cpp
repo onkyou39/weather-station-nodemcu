@@ -20,8 +20,10 @@ String ApiRequest() {
     auto client = std::make_unique<BearSSL::WiFiClientSecure>();
     client->setInsecure(); // отключаем проверку SSL
     HTTPClient https;
+    https.useHTTP10(true); //запрет chunked mode, принудительный HTTP 1.0
+    https.setTimeout(10000); //фикс ошибки IncompleteInput, таймаут потока на 10 секунд
     String payload = ""; // строка json ответа от сервера
-    String url = "https://api.weather.yandex.ru/v2/forecast?lat=" LATITUDE "&lon=" LONGITUDE;
+    String url = "https://api.weather.yandex.ru/v2/forecast?lat=" LATITUDE "&lon=" LONGITUDE "&limit=1";
     Serial.print("\n[HTTPS] begin...\n");
 
 
@@ -38,8 +40,7 @@ String ApiRequest() {
             // если файл найден на сервере
             if (httpCode == HTTP_CODE_OK || httpCode == HTTP_CODE_MOVED_PERMANENTLY) {
             payload = https.getString();
-            // String payload = https.getString(1024);  // Вариант для режима chunk mode
-            Serial.println(payload);
+            Serial.println("Payload received");
             }
         } else {
             Serial.printf("[HTTPS] GET... failed, error: %s\n", https.errorToString(httpCode).c_str());
@@ -49,6 +50,7 @@ String ApiRequest() {
     return payload;
 }
 
+
 bool fetchWeatherData() {
 
     String payload = ApiRequest();
@@ -56,9 +58,11 @@ bool fetchWeatherData() {
         Serial.println("Json data error, empty payload");
         return false;
     }
-    
-    DynamicJsonDocument doc(2048);
+    JsonDocument doc;
+
     DeserializationError error = deserializeJson(doc, payload);
+    serializeJsonPretty(doc, Serial);
+    
 
     if (error) {
         Serial.print("deserializeJson failed: ");
@@ -74,7 +78,7 @@ bool fetchWeatherData() {
     JsonObject forecast = doc["forecast"];
     const char* sunset = forecast["sunset"];
 
-    Serial.println("Weather data:");
+    Serial.println("\nWeather data:");
     Serial.print("Temperature: "); Serial.println(temp);
     Serial.print("Wind: "); Serial.print(parseWindDirection(wind_dir)); Serial.print(" ");
     Serial.print(wind_speed); Serial.println(" m/s");
