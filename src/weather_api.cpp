@@ -3,23 +3,15 @@
 #include <ArduinoJson.h>
 #include <Arduino.h>
 #include "config.h"
+#include "weather_data.h"
 
 unsigned long lastApiRequestTime = 0; // Время последнего запроса к API
 const unsigned long apiUpdateInterval = 3600000; // Интервал для обновления API в миллисекундах (1 час)
 
-String parseWindDirection(const String& wind_dir) {
-      const String directions[] = {"nw", "n", "ne", "e", "se", "s", "sw", "w"};
-    const String names[] = {"NW", "N", "NE", "E", "SE", "S", "SW", "W"};
+WeatherData weatherData; // Структура с данными о погоде
 
-    for (int i = 0; i < 8; i++) {
-        if (wind_dir == directions[i]) {
-        return names[i];
-        }
-    }
-    return wind_dir;
-}
 
-String ApiRequest() {
+JsonDocument ApiRequest() {
     auto client = std::make_unique<BearSSL::WiFiClientSecure>();
     client->setInsecure(); // отключаем проверку SSL
     HTTPClient https;
@@ -29,6 +21,7 @@ String ApiRequest() {
     String url = "https://api.weather.yandex.ru/v2/forecast?lat=" LATITUDE "&lon=" LONGITUDE "&limit=1";
     Serial.print("\n[HTTPS] begin...\n");
 
+    JsonDocument doc;
 
     if (https.begin(*client, url)) {
         https.addHeader("X-Yandex-Weather-Key", API_KEY);
@@ -42,95 +35,115 @@ String ApiRequest() {
 
             // если файл найден на сервере
             if (httpCode == HTTP_CODE_OK || httpCode == HTTP_CODE_MOVED_PERMANENTLY) {
-            payload = https.getString();
-            Serial.println("Payload received");
+            DeserializationError error = deserializeJson(doc, https.getStream());
+            if (error) {
+                Serial.print("deserializeJson failed: ");
+                Serial.println(error.c_str());
+                doc.clear();
+                https.end();
+            }
+            else Serial.println("Payload received");
             }
         } else {
             Serial.printf("[HTTPS] GET... failed, error: %s\n", https.errorToString(httpCode).c_str());
         }
         https.end();
     } else Serial.printf("[HTTPS] Unable to connect\n");
-    return payload;
+    return doc;
 }
 
 
-void fetchWeatherData() {
-
-    String payload = ApiRequest();
-    delay(100);
-    if (payload.isEmpty()) {
-        Serial.println("Json data error, empty payload");
-        return;
+bool fetchWeatherData() {
+    Serial.println("Trying receive data from API...");
+    JsonDocument doc = ApiRequest();
+    if (doc.isNull()) {
+            Serial.println("Json data error, empty payload");
+            return false;
     }
-    JsonDocument doc;
+    serializeJsonPretty(doc, Serial); // Для отладки
 
-    DeserializationError error = deserializeJson(doc, payload);
-    serializeJsonPretty(doc, Serial);
+    // Устанавливаем время с сервера
+    weatherData.now = doc["now"];
+    Serial.print("\n\nServer UnixTime: "); Serial.println(weatherData.now);
+    weatherData.now_dt = doc["now_dt"].as<String>();
+    Serial.print("Server Time (String): "); Serial.println(weatherData.now_dt);
     
-
-    if (error) {
-        Serial.print("deserializeJson failed: ");
-        Serial.println(error.c_str());
-        return;
-    }
-
+    
+    // Фактическая информация о погоде
     JsonObject fact = doc["fact"];
-    int temp = fact["temp"];
-    String wind_dir = fact["wind_dir"];
-    float wind_speed = fact["wind_speed"];
+    FactData factData;
 
-    JsonObject forecast = doc["forecast"];
-    const char* sunset = forecast["sunset"];
+    factData.is_thunder = fact["is_thunder"];
+    factData.temp = fact["temp"];
+    factData.feels_like = fact["feels_like"];
+    //factData.pressure_mm = fact["pressure_mm"];
+    factData.humidity = fact["humidity"];
+    //factData.temp_water = fact["temp_water"];
+    factData.wind_speed = fact["wind_speed"];
+    factData.wind_gust = fact["wind_gust"];
+    factData.condition = fact["condition"].as<String>();
+    factData.wind_dir = fact["wind_dir"].as<String>();
+    factData.cloudness = fact["cloudness"];
+    factData.prec_type = fact["prec_type"];
+    factData.prec_strength = fact["prec_strength"];
+    
+    weatherData.fact = factData;
 
-    Serial.println("\nWeather data:");
-    Serial.print("Temperature: "); Serial.println(temp);
-    Serial.print("Wind: "); Serial.print(parseWindDirection(wind_dir)); Serial.print(" ");
-    Serial.print(wind_speed); Serial.println(" m/s");
-    Serial.print("Sunset: "); Serial.println(sunset);
+    Serial.println("\nFact Data:");
+
+    Serial.print("Is Thunder: "); Serial.println(factData.is_thunder);
+    Serial.print("Temperature: "); Serial.println(factData.temp);
+    Serial.print("Feels Like: "); Serial.println(factData.feels_like);
+    //Serial.print("Pressure (mm Hg): "); Serial.println(factData.pressure_mm);
+    Serial.print("Humidity: "); Serial.println(factData.humidity);
+    //Serial.print("Water Temperature: "); Serial.println(factData.temp_water);
+    Serial.print("Wind Speed: "); Serial.println(factData.wind_speed);
+    Serial.print("Wind Gust: "); Serial.println(factData.wind_gust);
+    Serial.print("Precipitation Strength: "); Serial.println(factData.prec_strength);
+    Serial.print("Precipitation Type: "); Serial.println(factData.prec_type);
+    Serial.print("Cloudiness: "); Serial.println(factData.cloudness);
+    Serial.print("Condition: "); Serial.println(factData.condition);
+    Serial.print("Wind Direction: "); Serial.println(factData.wind_dir);
+
+
+
+    // Прогнозная информация о погоде
+    JsonObject forecast = doc["forecasts"][0];
+    ForecastData forecastData;
+
+    forecastData.week = forecast["week"];
+    forecastData.date_ts = forecast["date_ts"];
+    forecastData.date = forecast["date"].as<String>();
+    forecastData.rise_begin = forecast["rise_begin"].as<String>();
+    forecastData.sunset = forecast["sunset"].as<String>();
+
+    weatherData.forecast = forecastData;
+
+    Serial.println("\nForecast Data:");
+
+    Serial.print("Week: "); Serial.println(forecastData.week);
+    Serial.print("Date TS (Unixtime): "); Serial.println(forecastData.date_ts);
+    Serial.print("Date (YYYY-MM-DD): "); Serial.println(forecastData.date);
+    Serial.print("Rise Begin: "); Serial.println(forecastData.rise_begin);
+    Serial.print("Sunset: "); Serial.println(forecastData.sunset);
+    return true;
 }
 
 //функция запроса через интервал
 void updateApiData() {
-    String payload = "";
+    JsonDocument doc;
     unsigned long currentTime = millis();
     if (currentTime - lastApiRequestTime >= apiUpdateInterval || lastApiRequestTime == 0) {
         Serial.println("Updating data from API...");
 
-        payload = ApiRequest();
-        delay(100);
-        if (payload.isEmpty()) {
-            Serial.println("Json data error, empty payload");
+        if (!fetchWeatherData()) {
+            Serial.println("Error updating data");
             return;
-        }
-        JsonDocument doc;
-
-        DeserializationError error = deserializeJson(doc, payload);
-        serializeJsonPretty(doc, Serial);
-    
-
-        if (error) {
-            Serial.print("deserializeJson failed: ");
-            Serial.println(error.c_str());
-            return;
-        }
+        } 
+        
+        // Сбрасываем время последнего запроса к API
         lastApiRequestTime = currentTime;
-
-        JsonObject fact = doc["fact"];
-        int temp = fact["temp"];
-        String wind_dir = fact["wind_dir"];
-        float wind_speed = fact["wind_speed"];
-
-        JsonObject forecast = doc["forecast"];
-        const char* sunset = forecast["sunset"];
-
-        Serial.println("\nWeather data:");
-        Serial.print("Temperature: "); Serial.println(temp);
-        Serial.print("Wind: "); Serial.print(parseWindDirection(wind_dir)); Serial.print(" ");
-        Serial.print(wind_speed); Serial.println(" m/s");
-        Serial.print("Sunset: "); Serial.println(sunset);
-
+        
     }
-    else {
-        Serial.print("currentTime = "); Serial.println(currentTime); //для отладки
-    }
+    //else Serial.print("currentTime = "); Serial.println(currentTime); //для отладки
 }
