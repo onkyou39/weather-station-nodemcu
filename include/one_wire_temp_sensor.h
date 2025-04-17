@@ -9,7 +9,7 @@ class OneWireTempSensor : public SensorBase {
     public:
         OneWireTempSensor(uint8_t pin);
         void begin() override;
-        float getTemperature() override;
+        float getTemperature();
     
     private:
         OneWire oneWire;
