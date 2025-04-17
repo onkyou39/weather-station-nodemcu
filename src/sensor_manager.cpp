@@ -1,4 +1,4 @@
-#include <Arduino.h>
+/*#include <Arduino.h>
 #include "sensor_manager.h"
 
 void SensorManager::addSensor(SensorBase *sensor) {
@@ -19,4 +19,4 @@ void SensorManager::logAll() {
         Serial.print("  Press:"); Serial.println(sensors[i]->getPressure());
         Serial.print("  Light:"); Serial.println(sensors[i]->getLightLevel());
     }
-}
+}*/

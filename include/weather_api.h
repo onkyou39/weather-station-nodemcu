@@ -3,6 +3,7 @@
 
 
 String ApiRequest();
-bool fetchWeatherData();
+void fetchWeatherData();
+void updateApiData();
 
 #endif

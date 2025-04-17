@@ -4,6 +4,9 @@
 #include <Arduino.h>
 #include "config.h"
 
+unsigned long lastApiRequestTime = 0; // Время последнего запроса к API
+const unsigned long apiUpdateInterval = 3600000; // Интервал для обновления API в миллисекундах (1 час)
+
 String parseWindDirection(const String& wind_dir) {
       const String directions[] = {"nw", "n", "ne", "e", "se", "s", "sw", "w"};
     const String names[] = {"NW", "N", "NE", "E", "SE", "S", "SW", "W"};
@@ -51,12 +54,13 @@ String ApiRequest() {
 }
 
 
-bool fetchWeatherData() {
+void fetchWeatherData() {
 
     String payload = ApiRequest();
+    delay(100);
     if (payload.isEmpty()) {
         Serial.println("Json data error, empty payload");
-        return false;
+        return;
     }
     JsonDocument doc;
 
@@ -67,7 +71,7 @@ bool fetchWeatherData() {
     if (error) {
         Serial.print("deserializeJson failed: ");
         Serial.println(error.c_str());
-        return false;
+        return;
     }
 
     JsonObject fact = doc["fact"];
@@ -83,5 +87,50 @@ bool fetchWeatherData() {
     Serial.print("Wind: "); Serial.print(parseWindDirection(wind_dir)); Serial.print(" ");
     Serial.print(wind_speed); Serial.println(" m/s");
     Serial.print("Sunset: "); Serial.println(sunset);
-    return true;
+}
+
+//функция запроса через интервал
+void updateApiData() {
+    String payload = "";
+    unsigned long currentTime = millis();
+    if (currentTime - lastApiRequestTime >= apiUpdateInterval || lastApiRequestTime == 0) {
+        Serial.println("Updating data from API...");
+
+        payload = ApiRequest();
+        delay(100);
+        if (payload.isEmpty()) {
+            Serial.println("Json data error, empty payload");
+            return;
+        }
+        JsonDocument doc;
+
+        DeserializationError error = deserializeJson(doc, payload);
+        serializeJsonPretty(doc, Serial);
+    
+
+        if (error) {
+            Serial.print("deserializeJson failed: ");
+            Serial.println(error.c_str());
+            return;
+        }
+        lastApiRequestTime = currentTime;
+
+        JsonObject fact = doc["fact"];
+        int temp = fact["temp"];
+        String wind_dir = fact["wind_dir"];
+        float wind_speed = fact["wind_speed"];
+
+        JsonObject forecast = doc["forecast"];
+        const char* sunset = forecast["sunset"];
+
+        Serial.println("\nWeather data:");
+        Serial.print("Temperature: "); Serial.println(temp);
+        Serial.print("Wind: "); Serial.print(parseWindDirection(wind_dir)); Serial.print(" ");
+        Serial.print(wind_speed); Serial.println(" m/s");
+        Serial.print("Sunset: "); Serial.println(sunset);
+
+    }
+    else {
+        Serial.print("currentTime = "); Serial.println(currentTime); //для отладки
+    }
 }

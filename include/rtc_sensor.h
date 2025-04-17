@@ -2,6 +2,7 @@
 #define RTC_SENSOR_H
 
 #include "sensor_base.h"
+#include <Arduino.h>
 
 class RtcSensor : public SensorBase {
 public:

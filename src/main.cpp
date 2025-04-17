@@ -1,22 +1,25 @@
 #include <Arduino.h>
+#include <Wire.h>
+#include <RTClib.h>
 #include "wifi_utils.h"
 #include "weather_api.h"
-/*#include <Adafruit_GFX.h>
-#include <Adafruit_ST7789.h>
-#include <ESP8266WiFi.h>
-#include <ESP8266HTTPClient.h>
-#include "config.h" //файл конфигурации с API ключом и данными WiFi*/
 
+/*RTC_DS3231 rtc;  // Инициализируем RTC
+unsigned long lastApiRequestTime = 0; // Время последнего запроса к API
+const unsigned long apiUpdateInterval = 3600000; // Интервал для обновления API в миллисекундах (1 час)
+String payload;  // Для хранения данных из API*/
 
 void setup() 
 {
     Serial.begin(115200);
     connectToWiFi();
-    bool success = fetchWeatherData();
-    Serial.print(success);
+    //fetchWeatherData();
+    //updateApiData();
+    
 }
 
 void loop() 
 {
-
+    updateApiData();
+    delay(1000);
 }

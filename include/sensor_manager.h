@@ -6,10 +6,10 @@
 
 class SensorManager {
 public:
-    void addSensor(SensorBase* sensor);
+    /*void addSensor(SensorBase* sensor);
     void beginAll();
     void logAll(); // выводит значения в Serial
-    //void printAll(); //выводит значения на lcd
+    //void printAll(); //выводит значения на lcd*/
 
 private:
     std::vector<SensorBase*> sensors;
