@@ -3,23 +3,19 @@
 #include <RTClib.h>
 #include "wifi_utils.h"
 #include "weather_api.h"
+#include "lcd.h"
 
-/*RTC_DS3231 rtc;  // Инициализируем RTC
-unsigned long lastApiRequestTime = 0; // Время последнего запроса к API
-const unsigned long apiUpdateInterval = 3600000; // Интервал для обновления API в миллисекундах (1 час)
-String payload;  // Для хранения данных из API*/
+Adafruit_ST7789 tft = Adafruit_ST7789(TFT_CS, TFT_DC, TFT_RST);
 
 void setup() 
 {
+    lcdInit();
     Serial.begin(115200);
     connectToWiFi();
-    //fetchWeatherData();
-    //updateApiData();
-    
 }
 
 void loop() 
 {
-    updateApiData();
+    //updateApiData();
     delay(1000);
 }

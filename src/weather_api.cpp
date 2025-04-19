@@ -6,7 +6,7 @@
 #include "weather_data.h"
 
 unsigned long lastApiRequestTime = 0; // Время последнего запроса к API
-const unsigned long apiUpdateInterval = 3600000; // Интервал для обновления API в миллисекундах (1 час)
+const unsigned long apiUpdateInterval = 7200000; // Интервал для обновления API в миллисекундах (2 часа)
 
 WeatherData weatherData; // Структура с данными о погоде
 

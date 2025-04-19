@@ -1,5 +1,6 @@
 #include "utf8_converter.h"
 
+// Конвертор UTF-8 -> CP-1251
 String utf8rus(const String& source) {
     int i, k;
     String target;
