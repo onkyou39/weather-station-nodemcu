@@ -3,18 +3,18 @@
 #include "one_wire_temp_sensor.h"
 
 void lcdInit() {
-    tft.init(240, 240, SPI_MODE2);  // Инициализация экрана
-    //tft.setSPISpeed(20000000); // 20 MHz
+    tft.begin();
+    tft.setAttribute(UTF8_SWITCH, false);
+    tft.setAttribute(CP437_SWITCH, true);
     tft.setRotation(0);  // Ориентация экрана
-    tft.fillScreen(ST77XX_WHITE);  // Очистка экрана
+    tft.fillScreen(TFT_WHITE);  // Очистка экрана
     tft.setTextSize(2);
-    tft.setTextColor(ST77XX_BLACK);
-    tft.cp437(true); // Необходимо для отображения символа градуса
+    tft.setTextColor(TFT_BLACK);
 }
 
 void displayApiWeather(const WeatherData& data) {
-    tft.fillScreen(ST77XX_WHITE);
-    tft.setTextColor(ST77XX_BLACK);
+    tft.fillScreen(TFT_WHITE);
+    tft.setTextColor(TFT_BLACK);
     tft.setCursor(0, 0);
     tft.setTextSize(2);
 
@@ -35,13 +35,11 @@ void displayApiWeather(const WeatherData& data) {
 }
 
 void displayLocalWeather() {
-    tft.fillScreen(ST77XX_WHITE);
-    tft.setTextColor(ST77XX_BLACK);
+    tft.fillScreen(TFT_WHITE);
+    tft.setTextColor(TFT_BLACK);
     tft.setCursor(0, 0);
     tft.setTextSize(2);
 
     tft.println(utf8rus("Локальные данные:"));
-    tft.fillRect(0, 32, 240, 16, ST77XX_WHITE);  // (x, y, w, h, color)
-    tft.setCursor(0, 32);
     tft.print(utf8rus("Темп. датчик 1: ") + String(tempSensor1.getTemperature(), 1) + char(176) + "C");
 }

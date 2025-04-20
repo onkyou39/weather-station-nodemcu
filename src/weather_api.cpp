@@ -171,14 +171,14 @@ void updateApiData() {
     JsonDocument doc;
     unsigned long currentTime = millis();
     if (currentTime - lastApiRequestTime >= apiUpdateInterval || lastApiRequestTime == 0) {
-        tft.setTextColor(ST77XX_BLACK);
+        tft.setTextColor(TFT_BLACK);
         tft.println(utf8rus("\nПолучение данных от сервера..."));
         Serial.println("Updating data from API...");
         lastApiRequestTime = currentTime;
 
         if (!fetchWeatherData()) {
-            tft.fillScreen(ST77XX_WHITE);
-            tft.setTextColor(ST77XX_RED);
+            tft.fillScreen(TFT_WHITE);
+            tft.setTextColor(TFT_RED);
             tft.print(utf8rus("Ошибка получения данных"));
             Serial.println("Error updating data");
             return;

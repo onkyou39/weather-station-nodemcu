@@ -22,14 +22,14 @@ bool connectToWiFi()
     if (WiFi.status() != WL_CONNECTED)
     {
         Serial.println("\nNot connected to WiFi");
-        tft.fillScreen(ST77XX_WHITE);
-        tft.setTextColor(ST77XX_RED);
+        tft.fillScreen(TFT_WHITE);
+        tft.setTextColor(TFT_RED);
         tft.print(utf8rus("\n\nОшибка подключения к WiFi"));
         return false;
     }
     else {
         Serial.println("\nWiFi connected");
-        tft.setTextColor(ST77XX_GREEN);
+        tft.setTextColor(TFT_GREEN);
         tft.print(utf8rus("\n\nПодключено"));
         Serial.print("IP address: ");
         Serial.println(WiFi.localIP());

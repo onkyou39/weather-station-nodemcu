@@ -8,7 +8,7 @@
 
 //time_t utcTime = 0; // Текущее время в unixtime
 bool isOnline = true;
-Adafruit_ST7789 tft = Adafruit_ST7789(TFT_CS, TFT_DC, TFT_RST);
+TFT_eSPI tft = TFT_eSPI();
 OneWireTempSensor tempSensor1(D4);
 
 void setup() 
@@ -16,12 +16,12 @@ void setup()
     tempSensor1.begin();
     lcdInit();
     Serial.begin(115200);
-    //connectToWiFi();
+    connectToWiFi();
 }
 
 void loop() 
 {
     delay(1000);
-    //updateApiData();
-    displayLocalWeather();
+    updateApiData();
+    //displayLocalWeather();
 }
