@@ -23,6 +23,43 @@ JsonDocument ApiRequest() {
     Serial.print("\n[HTTPS] begin...\n");
 
     JsonDocument doc;
+    JsonDocument filter;
+    filter["now"] = true;
+    filter["now_dt"] = true;
+
+    JsonObject filter_fact = filter["fact"].to<JsonObject>();
+    filter_fact["obs_time"] = true;
+    filter_fact["season"] = true;
+    filter_fact["source"] = true;
+    filter_fact["uptime"] = true;
+    filter_fact["cloudness"] = true;
+    filter_fact["condition"] = true;
+    filter_fact["feels_like"] = true;
+    filter_fact["humidity"] = true;
+    filter_fact["is_thunder"] = true;
+    filter_fact["polar"] = true;
+    filter_fact["prec_prob"] = true;
+    filter_fact["prec_strength"] = true;
+    filter_fact["prec_type"] = true;
+    filter_fact["pressure_mm"] = true;
+    filter_fact["pressure_pa"] = true;
+    filter_fact["temp"] = true;
+    filter_fact["uv_index"] = true;
+    filter_fact["wind_angle"] = true;
+    filter_fact["wind_dir"] = true;
+    filter_fact["wind_gust"] = true;
+    filter_fact["wind_speed"] = true;
+
+    JsonObject filter_forecasts_0 = filter["forecasts"].add<JsonObject>();
+    filter_forecasts_0["date"] = true;
+    filter_forecasts_0["date_ts"] = true;
+    filter_forecasts_0["week"] = true;
+    filter_forecasts_0["sunrise"] = true;
+    filter_forecasts_0["sunset"] = true;
+    filter_forecasts_0["rise_begin"] = true;
+    filter_forecasts_0["set_end"] = true;
+    filter_forecasts_0["moon_code"] = true;
+    filter_forecasts_0["moon_text"] = true;
 
     if (https.begin(*client, url)) {
         https.addHeader("X-Yandex-Weather-Key", API_KEY);
@@ -36,14 +73,13 @@ JsonDocument ApiRequest() {
 
             // если файл найден на сервере
             if (httpCode == HTTP_CODE_OK || httpCode == HTTP_CODE_MOVED_PERMANENTLY) {
-            DeserializationError error = deserializeJson(doc, https.getStream());
-            if (error) {
-                Serial.print("deserializeJson failed: ");
-                Serial.println(error.c_str());
-                doc.clear();
-                https.end();
-            }
-            else Serial.println("Payload received");
+                DeserializationError error = deserializeJson(doc, https.getStream(), DeserializationOption::Filter(filter));
+                if (error) {
+                    Serial.print("deserializeJson failed: ");
+                    Serial.println(error.c_str());
+                    doc.clear();
+                    https.end();
+                } else Serial.println("Payload received");
             }
         } else {
             Serial.printf("[HTTPS] GET... failed, error: %s\n", https.errorToString(httpCode).c_str());
