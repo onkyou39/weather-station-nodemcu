@@ -15,4 +15,5 @@ extern Adafruit_ST7789 tft;
 
 void lcdInit();
 void displayApiWeather(const WeatherData &data);
+void displayLocalWeather();
 #endif

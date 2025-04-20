@@ -9,7 +9,10 @@ void OneWireTempSensor::begin() {
 }
 
 float OneWireTempSensor::getTemperature() {
-    ds18b20.requestTemperatures();
+    //ds18b20.requestTemperatures();
+    ds18b20.requestTemperaturesByIndex(0);
+    
     float tempC = ds18b20.getTempCByIndex(0);
+    Serial.println(tempC);
     return isnan(tempC) ? -127.0f : tempC;
 }

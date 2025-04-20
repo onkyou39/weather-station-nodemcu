@@ -18,7 +18,7 @@ void RtcSensor::begin() {
     }
 }
 
-void RtcSensor::update() {
+void RtcSensor::getTimeAndDate() {
     // Получаем текущую дату и время
     DateTime now = rtc.now();
 

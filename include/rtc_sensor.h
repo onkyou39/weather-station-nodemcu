@@ -7,7 +7,7 @@
 class RtcSensor : public SensorBase {
 public:
     void begin() override;
-    void update() override;
+    void getTimeAndDate();
     //void setTime(int hour, int minute, int second);
     //void setDate(int day, int month, int year);
     void setTimeUnix(uint32_t unixTime);

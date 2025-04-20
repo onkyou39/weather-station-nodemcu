@@ -16,4 +16,6 @@ class OneWireTempSensor : public SensorBase {
         DallasTemperature ds18b20;
     };
 
+extern OneWireTempSensor tempSensor1;
+
 #endif
