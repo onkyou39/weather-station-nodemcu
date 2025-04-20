@@ -1,4 +1,5 @@
 #include "time_utils.h"
+#include "config.h"
 
 // Функция для форматирования времени
 String parseTime(time_t utcTime, const char* format) {

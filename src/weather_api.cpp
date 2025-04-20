@@ -187,5 +187,4 @@ void updateApiData() {
         // Сбрасываем время последнего запроса к API
         
     }
-    //else Serial.print("currentTime = "); Serial.println(currentTime); //для отладки
 }
