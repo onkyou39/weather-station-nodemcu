@@ -4,10 +4,12 @@
 #ifdef __AVR__
  #include <avr/io.h>
  #include <avr/pgmspace.h>
+#elif defined(ESP8266)
+ #include <pgmspace.h>
 #else
  #define PROGMEM
 #endif
- 
+
 // Standard ASCII 5x7 font
 
 static const unsigned char font[] PROGMEM = {

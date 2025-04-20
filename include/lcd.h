@@ -5,6 +5,7 @@
 #include <Adafruit_ST7789.h>
 #include "weather_data.h"
 #include "utf8_converter.h"
+#include "time_utils.h"
 
 #define TFT_CS    D8     // Пин для CS
 #define TFT_DC    D1     // Пин для DC
