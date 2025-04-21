@@ -18,7 +18,7 @@ JsonDocument ApiRequest() {
     HTTPClient https;
     https.useHTTP10(true); //запрет chunked mode, принудительный HTTP 1.0
     https.setTimeout(10000); //фикс ошибки IncompleteInput, таймаут потока на 10 секунд
-    String url = "https://api.weather.yandex.ru/v2/forecast?lat=" LATITUDE "&lon=" LONGITUDE "&limit=1";
+    String url = "https://api.weather.yandex.ru/v2/forecast?lat=" LATITUDE "&lon=" LONGITUDE "&limit=1&hours=false";
     Serial.print("\n[HTTPS] begin...\n");
 
     JsonDocument doc;
