@@ -19,11 +19,13 @@ void setup() {
     tempSensor1.getTemperature(); // Фикс ошибки при первом считывании
     lcdInit();
     Serial.begin(115200);
-    // connectToWiFi();
+    isOnline = connectToWiFi();
 }
 
 void loop() {
     delay(1000);
-    // updateApiData();
-    displayLocalWeather();
+    if (isOnline)
+        updateApiData();
+    else
+        displayLocalWeather();
 }
