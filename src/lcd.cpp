@@ -1,6 +1,7 @@
 #include "LCD.h"
 #include "weather_utils.h"
 #include "one_wire_temp_sensor.h"
+#include "humidity_sensor.h"
 
 void lcdInit() {
     tft.begin();
@@ -42,7 +43,10 @@ void initSprites() {
     localWeatherSprite.createSprite(240, 80); // Пример: одна строка заголовка + температура
     localWeatherSprite.setTextColor(TFT_BLACK, TFT_WHITE);
     localWeatherSprite.setTextSize(2);
-  }
+}
+
+extern OneWireTempSensor tempSensor1;
+extern humiditySensor humiditySensor1;
   
 void displayLocalWeather() {
     tft.fillScreen(TFT_WHITE);
@@ -51,5 +55,7 @@ void displayLocalWeather() {
     tft.setTextSize(2);
 
     tft.println(utf8rus("Локальные данные:"));
-    tft.print(utf8rus("Темп. датчик 1: ") + String(tempSensor1.getTemperature(), 1) + char(176) + "C");
+    tft.println(utf8rus("Темп. датчик 1: ") + String(tempSensor1.getTemperature(), 1) + char(176) + "C");
+    tft.println(utf8rus("Темп. с д. вл. :") + String(humiditySensor1.getTemperature(), 1) + char(176) + "C");
+    tft.println(utf8rus("Влажность воздуха: ") + String(humiditySensor1.getHumidity()) + "%");
 }
