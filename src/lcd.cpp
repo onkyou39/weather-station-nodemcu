@@ -6,7 +6,7 @@ void lcdInit() {
     tft.begin();
     tft.setAttribute(UTF8_SWITCH, false);
     tft.setAttribute(CP437_SWITCH, true);
-    tft.setRotation(0);  // Ориентация экрана
+    tft.setRotation(2);  // Ориентация экрана
     tft.fillScreen(TFT_WHITE);  // Очистка экрана
     tft.setTextSize(2);
     tft.setTextColor(TFT_BLACK);
@@ -34,6 +34,16 @@ void displayApiWeather(const WeatherData& data) {
     tft.println(utf8rus("\nОбновлено: ") + parseTime(data.now));
 }
 
+
+TFT_eSprite localWeatherSprite = TFT_eSprite(&tft);
+
+void initSprites() {
+    localWeatherSprite.setColorDepth(8);
+    localWeatherSprite.createSprite(240, 80); // Пример: одна строка заголовка + температура
+    localWeatherSprite.setTextColor(TFT_BLACK, TFT_WHITE);
+    localWeatherSprite.setTextSize(2);
+  }
+  
 void displayLocalWeather() {
     tft.fillScreen(TFT_WHITE);
     tft.setTextColor(TFT_BLACK);

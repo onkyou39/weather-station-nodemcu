@@ -18,7 +18,6 @@ JsonDocument ApiRequest() {
     HTTPClient https;
     https.useHTTP10(true); //запрет chunked mode, принудительный HTTP 1.0
     https.setTimeout(10000); //фикс ошибки IncompleteInput, таймаут потока на 10 секунд
-    String payload = ""; // строка json ответа от сервера
     String url = "https://api.weather.yandex.ru/v2/forecast?lat=" LATITUDE "&lon=" LONGITUDE "&limit=1";
     Serial.print("\n[HTTPS] begin...\n");
 
@@ -120,6 +119,7 @@ bool fetchWeatherData() {
     factData.wind_gust = fact["wind_gust"];
     factData.condition = fact["condition"].as<String>();
     factData.wind_dir = fact["wind_dir"].as<String>();
+    factData.season = fact["season"].as<String>();
     factData.cloudness = fact["cloudness"];
     factData.prec_type = fact["prec_type"];
     factData.prec_strength = fact["prec_strength"];

@@ -41,6 +41,7 @@ struct FactData {
     float cloudness; // Облачность
     String condition; // Код расшифровки погодного описания
     String wind_dir; // Направление ветра
+    String season; // Время года в данном населенном пункте
     //String phenom_condition; // Код расшифровки дополнительного погодного описания
   };
   

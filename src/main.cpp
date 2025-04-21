@@ -9,19 +9,20 @@
 //time_t utcTime = 0; // Текущее время в unixtime
 bool isOnline = true;
 TFT_eSPI tft = TFT_eSPI();
-OneWireTempSensor tempSensor1(D4);
+OneWireTempSensor tempSensor1(D2);
 
 void setup() 
 {
     tempSensor1.begin();
+    tempSensor1.getTemperature(); // Фикс ошибки при первом считывании
     lcdInit();
     Serial.begin(115200);
-    connectToWiFi();
+    //connectToWiFi();
 }
 
 void loop() 
 {
     delay(1000);
-    updateApiData();
-    //displayLocalWeather();
+    //updateApiData();
+    displayLocalWeather();
 }
