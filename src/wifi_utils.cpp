@@ -24,7 +24,10 @@ bool connectToWiFi()
         Serial.println("\nNot connected to WiFi");
         tft.fillScreen(TFT_WHITE);
         tft.setTextColor(TFT_RED);
-        tft.print(utf8rus("\n\nОшибка подключения к WiFi"));
+        tft.println(utf8rus("\n\nОшибка подключения к WiFi"));
+        tft.setTextColor(TFT_BLACK);
+        tft.print(utf8rus("Переход в offline режим"));
+        delay(1000);
         return false;
     }
     else {

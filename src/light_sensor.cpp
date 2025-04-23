@@ -20,7 +20,7 @@ float LightSensor::getLux() {
         return event.light;
     } else {
         Serial.println("Sensor overload");
-        return -1.0; // ошибка
+        return 0; // ошибка
     }
 }
 

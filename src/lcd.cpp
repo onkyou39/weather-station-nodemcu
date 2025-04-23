@@ -41,49 +41,52 @@ void displayLocalWeather() {
     tft.setTextSize(2);
 
     if (!initialized) {
-        // tft.fillScreen(TFT_WHITE);
+        tft.fillScreen(TFT_WHITE);
         //  Заголовки и постоянные надписи
         tft.setTextColor(TFT_BLUE, TFT_WHITE);
         tft.setCursor(0, 0);
-        tft.println(utf8rus("Локальные данные"));
+        tft.println(utf8rus("Локальные данные\n"));
 
-        // tft.setCursor(0, 30);
-        tft.setTextColor(TFT_GREEN, TFT_WHITE);
-        tft.println(utf8rus("Темп. датчик 1:\n"));
+        tft.setTextColor(TFT_BLACK, TFT_WHITE);
+        tft.println(utf8rus("Температура:\n"));
 
-        // tft.setCursor(0, 60);
-        tft.setTextColor(TFT_CYAN, TFT_WHITE);
-        tft.println(utf8rus("Темп. датчик 2:\n"));
-
-        // tft.setCursor(0, 90);
-        tft.setTextColor(TFT_MAGENTA, TFT_WHITE);
+        
+        //tft.setTextColor(TFT_MAGENTA, TFT_WHITE);
         tft.println(utf8rus("Влажность воздуха:\n"));
+        
+        //tft.setTextColor(TFT_CYAN, TFT_WHITE);
+        tft.println(utf8rus("Освещенность:\n"));
 
         initialized = true;
     }
-    sensors.updateSensors();
+
     tft.setTextColor(TFT_BLACK, TFT_WHITE); // Чёрный текст на белом фоне (для перезаписи)
-    float temp1 = sensors.getTemperature();
-    float temp2 = sensors.getTemperature();
+    float temp = sensors.getTemperature();
     float humidity = sensors.getHumidity();
     float light = sensors.getLight();
+
     constexpr uint8_t lineHeight = 16; // Высота строки в пикселях при размере шрифта 2
 
+    // TextSize(1) → каждый символ: 6×8 пикселей (5 + 1 на отступ по ширине, и 7 + 1 по высоте)
+    // TextSize(2) → каждый символ: 12×16 пикселей
+    // TextSize(3) → 18×24 пикселя
+
     // Температура с первого датчика
-    tft.setCursor(0, lineHeight * 2); // 3 строка
+    tft.setCursor(0, lineHeight * 3); // 4 строка
     tft.print("     ");               // Очистка предыдущего значения
-    tft.setCursor(0, lineHeight * 2);
-    tft.print(String(temp1, 1) + (char)176 + "C");
+    tft.setCursor(0, lineHeight * 3);
+    tft.print(String(temp, 1) + (char)176 + "C");
 
-    // Температура с датчика влажности
-    tft.setCursor(0, lineHeight * 4); // 5 строка
-    tft.print("     ");
-    tft.setCursor(0, lineHeight * 4);
-    tft.print(String(temp2, 1) + (char)176 + "C");
-
+    
     // Влажность
-    tft.setCursor(0, lineHeight * 6); // 7 строка
+    tft.setCursor(0, lineHeight * 5); // 6 строка
     tft.print("     ");
-    tft.setCursor(0, lineHeight * 6);
+    tft.setCursor(0, lineHeight * 5);
     tft.print(String(humidity, 1) + "%");
+    
+    // Освещённость
+    tft.setCursor(0, lineHeight * 7); // 8 строка
+    tft.print("       ");
+    tft.setCursor(0, lineHeight * 7);
+    tft.print(String((int)light) + " lux");
 }
