@@ -1,7 +1,5 @@
 #include "LCD.h"
-#include "humidity_sensor.h"
-#include "light_sensor.h"
-#include "one_wire_temp_sensor.h"
+#include "sensor_manager.h"
 #include "weather_utils.h"
 
 void lcdInit() {
@@ -38,9 +36,7 @@ void displayApiWeather(const WeatherData &data) {
 
 void displayLocalWeather() {
     static bool initialized = false;
-    extern OneWireTempSensor tempSensor1;
-    extern HumiditySensor humiditySensor1;
-    extern LightSensor lightSensor;
+    extern SensorManager sensors;
 
     tft.setTextSize(2);
 
@@ -65,11 +61,12 @@ void displayLocalWeather() {
 
         initialized = true;
     }
+    sensors.updateSensors();
     tft.setTextColor(TFT_BLACK, TFT_WHITE); // Чёрный текст на белом фоне (для перезаписи)
-    float temp1 = tempSensor1.getTemperature();
-    float temp2 = humiditySensor1.getTemperature();
-    float humidity = humiditySensor1.getHumidity();
-    float light = lightSensor.getLux();
+    float temp1 = sensors.getTemperature();
+    float temp2 = sensors.getTemperature();
+    float humidity = sensors.getHumidity();
+    float light = sensors.getLight();
     constexpr uint8_t lineHeight = 16; // Высота строки в пикселях при размере шрифта 2
 
     // Температура с первого датчика

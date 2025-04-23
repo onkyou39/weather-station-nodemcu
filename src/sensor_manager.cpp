@@ -1,22 +1,26 @@
-/*#include <Arduino.h>
 #include "sensor_manager.h"
 
-void SensorManager::addSensor(SensorBase *sensor) {
-    sensors.push_back(sensor);
+void SensorManager::begin() {
+    tempSensor1.begin();
+    tempSensor1.getTemperature(); // Фикс ошибки при первом считывании
+    humiditySensor1.begin();
+    lightSensor1.begin(); 
 }
 
-void SensorManager::beginAll() {
-    for (auto sensor : sensors) {
-        sensor->begin();
-    }
+void SensorManager::updateSensors() {
+    temperature = tempSensor1.getTemperature();
+    humidity = humiditySensor1.getHumidity();
+    lux = lightSensor1.getLux();
 }
 
-void SensorManager::logAll() {
-    for (size_t i = 0; i < sensors.size(); ++i) {
-        Serial.printf("Sensor %u:\n", i + 1);
-        Serial.print("  Temp: "); Serial.println(sensors[i]->getTemperature());
-        Serial.print("  Hum:  "); Serial.println(sensors[i]->getHumidity());
-        Serial.print("  Press:"); Serial.println(sensors[i]->getPressure());
-        Serial.print("  Light:"); Serial.println(sensors[i]->getLightLevel());
-    }
-}*/
+float SensorManager::getTemperature() {
+    return temperature;
+}
+
+float SensorManager::getHumidity() {
+    return humidity;
+}
+
+float SensorManager::getLight() {
+    return lux;
+}
