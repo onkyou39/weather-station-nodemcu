@@ -4,7 +4,7 @@
 #include "Adafruit_HTU21DF.h"
 #include "sensor_base.h"
 
-class humiditySensor : public SensorBase {
+class HumiditySensor : public SensorBase {
   public:
     void begin() override;
     float getTemperature();

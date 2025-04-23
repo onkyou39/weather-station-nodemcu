@@ -1,18 +1,18 @@
 #include "humidity_sensor.h"
 
-void humiditySensor::begin() {
+void HumiditySensor::begin() {
     if (!htu.begin())
         Serial.println("Couldn't find HTU21D sensor");
 }
 
-float humiditySensor::getTemperature() {
+float HumiditySensor::getTemperature() {
     float temp = htu.readTemperature();
     Serial.print("Humidity temp: ");
     Serial.println(temp);
     return temp;
 }
 
-float humiditySensor::getHumidity() {
+float HumiditySensor::getHumidity() {
     float hum = htu.readHumidity();
     Serial.print("Humidity: ");
     Serial.println(hum);
