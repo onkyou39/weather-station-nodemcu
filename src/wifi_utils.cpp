@@ -1,12 +1,11 @@
-#include <ESP8266WiFi.h>
-#include <Arduino.h>
-#include "config.h"  // путь до файла с WIFI_SSID и WIFI_PASSWORD
+#include "wifi_utils.h"
+#include "config.h" // путь до файла с WIFI_SSID и WIFI_PASSWORD
 #include "lcd.h"
+#include <ESP8266WiFi.h>
 
 uint8_t tries = 20; // Число попыток подключения
 
-bool connectToWiFi() 
-{
+bool connectToWiFi() {
     tft.print(utf8rus("Подключение к "));
     tft.println(WIFI_SSID);
     Serial.print("Connecting to ");
@@ -19,8 +18,7 @@ bool connectToWiFi()
         tft.print(".");
     }
 
-    if (WiFi.status() != WL_CONNECTED)
-    {
+    if (WiFi.status() != WL_CONNECTED) {
         Serial.println("\nNot connected to WiFi");
         tft.fillScreen(TFT_WHITE);
         tft.setTextColor(TFT_RED);
@@ -29,8 +27,7 @@ bool connectToWiFi()
         tft.print(utf8rus("Переход в offline режим"));
         delay(1000);
         return false;
-    }
-    else {
+    } else {
         Serial.println("\nWiFi connected");
         tft.setTextColor(TFT_GREEN);
         tft.print(utf8rus("\n\nПодключено"));
@@ -38,4 +35,16 @@ bool connectToWiFi()
         Serial.println(WiFi.localIP());
         return true;
     }
+}
+
+bool connectionStatus() {
+    if (WiFi.status() == WL_CONNECTED) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+String getIP() {
+    return WiFi.localIP().toString();
 }

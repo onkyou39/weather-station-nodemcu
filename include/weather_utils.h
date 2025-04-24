@@ -3,8 +3,8 @@
 
 #include <Arduino.h>
 
-String parseCondition(const String& conditionCode);
-String parseWindDirection(const String& windDirCode);
+String parseCondition(const String &conditionCode);
+String parseWindDirection(const String &windDirCode);
 String parseCloudness(float value);
 
 #endif

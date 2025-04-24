@@ -9,7 +9,7 @@
 unsigned long lastApiRequestTime = 0; // Время последнего запроса к API
 const unsigned long apiUpdateInterval = 7200000; // Интервал для обновления API в миллисекундах (2 часа)
 
-WeatherData weatherData; // Структура с данными о погоде
+extern WeatherData weatherData; // Структура с данными о погоде
 
 
 JsonDocument ApiRequest() {
@@ -167,24 +167,26 @@ bool fetchWeatherData() {
 }
 
 //функция запроса через интервал
-void updateApiData() {
+bool updateApiData(bool drawIfUpdated) {
     JsonDocument doc;
     unsigned long currentTime = millis();
     if (currentTime - lastApiRequestTime >= apiUpdateInterval || lastApiRequestTime == 0) {
         tft.setTextColor(TFT_BLACK);
         tft.println(utf8rus("\nПолучение данных от сервера..."));
         Serial.println("Updating data from API...");
-        lastApiRequestTime = currentTime;
+        lastApiRequestTime = currentTime; // Сбрасываем время последнего запроса к API
 
         if (!fetchWeatherData()) {
             tft.fillScreen(TFT_WHITE);
             tft.setTextColor(TFT_RED);
             tft.print(utf8rus("Ошибка получения данных"));
+            delay(1000);
             Serial.println("Error updating data");
-            return;
+            return false;
         } 
-        displayApiWeather(weatherData); //Вывод на LCD дисплей
-        // Сбрасываем время последнего запроса к API
-        
+        if (drawIfUpdated)
+            displayApiWeather(weatherData); //Вывод на LCD дисплей
+        return true;
     }
+    return false;
 }

@@ -1,6 +1,7 @@
-#include "LCD.h"
+#include "lcd.h"
 #include "sensor_manager.h"
 #include "weather_utils.h"
+#include "wifi_utils.h"
 
 void lcdInit() {
     tft.begin();
@@ -34,28 +35,50 @@ void displayApiWeather(const WeatherData &data) {
     tft.println(utf8rus("\nОбновлено: ") + parseTime(data.now));
 }
 
-void displayLocalWeather() {
+void displayLocalWeather(bool reset) {
     static bool initialized = false;
     extern SensorManager sensors;
+    constexpr uint8_t lineHeight = 16; // Высота строки в пикселях при размере шрифта 2
+
+    // TextSize(1) → каждый символ: 6×8 пикселей (5 + 1 на отступ по ширине, и 7 + 1 по высоте)
+    // TextSize(2) → каждый символ: 12×16 пикселей
+    // TextSize(3) → 18×24 пикселя
+
+    if (reset) {
+        initialized = false;
+        return;
+    }
 
     tft.setTextSize(2);
 
     if (!initialized) {
+        tft.setTextColor(TFT_BLACK, TFT_WHITE);
+        extern bool isOnline;
         tft.fillScreen(TFT_WHITE);
         //  Заголовки и постоянные надписи
-        tft.setTextColor(TFT_BLUE, TFT_WHITE);
+        // tft.setTextColor(TFT_BLUE, TFT_WHITE);
         tft.setCursor(0, 0);
         tft.println(utf8rus("Локальные данные\n"));
 
-        tft.setTextColor(TFT_BLACK, TFT_WHITE);
+        // tft.setTextColor(TFT_BLACK, TFT_WHITE);
         tft.println(utf8rus("Температура:\n"));
 
-        
-        //tft.setTextColor(TFT_MAGENTA, TFT_WHITE);
+        // tft.setTextColor(TFT_MAGENTA, TFT_WHITE);
         tft.println(utf8rus("Влажность воздуха:\n"));
-        
-        //tft.setTextColor(TFT_CYAN, TFT_WHITE);
+
+        // tft.setTextColor(TFT_CYAN, TFT_WHITE);
         tft.println(utf8rus("Освещенность:\n"));
+
+        if (isOnline) {
+            tft.setCursor(0, lineHeight * 13);
+            tft.println(utf8rus("IP-адрес:"));
+            tft.print(getIP());
+        }
+        /*else {
+            tft.setCursor(0, lineHeight * 13);
+            tft.setTextColor(TFT_RED, TFT_WHITE);
+            tft.print(utf8rus("Оффлайн режим"));
+        }*/
 
         initialized = true;
     }
@@ -65,28 +88,21 @@ void displayLocalWeather() {
     float humidity = sensors.getHumidity();
     float light = sensors.getLight();
 
-    constexpr uint8_t lineHeight = 16; // Высота строки в пикселях при размере шрифта 2
-
-    // TextSize(1) → каждый символ: 6×8 пикселей (5 + 1 на отступ по ширине, и 7 + 1 по высоте)
-    // TextSize(2) → каждый символ: 12×16 пикселей
-    // TextSize(3) → 18×24 пикселя
-
     // Температура с первого датчика
     tft.setCursor(0, lineHeight * 3); // 4 строка
     tft.print("     ");               // Очистка предыдущего значения
     tft.setCursor(0, lineHeight * 3);
     tft.print(String(temp, 1) + (char)176 + "C");
 
-    
     // Влажность
     tft.setCursor(0, lineHeight * 5); // 6 строка
     tft.print("     ");
     tft.setCursor(0, lineHeight * 5);
     tft.print(String(humidity, 1) + "%");
-    
+
     // Освещённость
     tft.setCursor(0, lineHeight * 7); // 8 строка
-    tft.print("       ");
+    tft.print("          ");
     tft.setCursor(0, lineHeight * 7);
     tft.print(String((int)light) + " lux");
 }

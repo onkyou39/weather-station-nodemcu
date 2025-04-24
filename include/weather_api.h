@@ -4,6 +4,6 @@
 
 String ApiRequest();
 bool fetchWeatherData();
-void updateApiData();
+bool updateApiData(bool drawIfUpdated = true);
 
 #endif

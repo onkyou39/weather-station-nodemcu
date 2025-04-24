@@ -4,7 +4,7 @@
 #include <Arduino.h>
 
 // Функции для работы с временем и датой
-String parseTime(time_t utcTime, const char* format = "%H:%M:%S");
+String parseTime(time_t utcTime, const char *format = "%H:%M:%S");
 String parseDate(time_t utcTime);
 
 #endif
