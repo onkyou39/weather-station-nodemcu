@@ -4,7 +4,7 @@ void SensorManager::begin() {
     tempSensor1.begin();
     tempSensor1.getTemperature(); // Фикс ошибки при первом считывании
     humiditySensor1.begin();
-    lightSensor1.begin(); 
+    lightSensor1.begin();
 }
 
 void SensorManager::updateSensors() {

@@ -3,6 +3,6 @@
 
 #include <Arduino.h>
 
-String utf8rus(const String& source);
+String utf8rus(const String &source);
 
 #endif

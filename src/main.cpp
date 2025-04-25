@@ -21,7 +21,7 @@ OneButton button(buttonPin, true, true);
 void drawScreen(int screen) {
     switch (screen) {
     case 0:
-        displayLocalWeather(true);
+        displayLocalWeather(true);      // Сброс экрана локальных данных
         updateApiData(false);           // Устранение двойной отрисовки
         displayApiWeather(weatherData); // Если данные не обновились, отрисовка старых
         break;
@@ -46,15 +46,15 @@ void setup() {
 }
 
 void loop() {
+    button.tick(); // обработка кнопки
     unsigned long currentMillis = millis();
     if (currentMillis - lastUpdate >= updateInterval) {
         lastUpdate = currentMillis;
 
-        if (!connectionStatus())
+        if (!connectionStatus() && isOnline) {
             isOnline = false;
-        if (!isOnline){
-            currentScreen = 1;
-            //displayLocalWeather(true); // сброс экрана для отображения предупреждения о офлайн режиме
+            currentScreen = 1;         // Переход на экран с локальными данными
+            displayLocalWeather(true); // Cброс экрана для отображения предупреждения о офлайн режиме
         }
 
         sensors.updateSensors();
@@ -72,6 +72,5 @@ void loop() {
 
     if (isOnline) {
         handleServer(); // обработка HTTP-запросов
-        button.tick();  // обработка кнопки
     }
 }

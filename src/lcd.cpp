@@ -37,6 +37,7 @@ void displayApiWeather(const WeatherData &data) {
 
 void displayLocalWeather(bool reset) {
     static bool initialized = false;
+    extern bool isOnline;
     extern SensorManager sensors;
     constexpr uint8_t lineHeight = 16; // Высота строки в пикселях при размере шрифта 2
 
@@ -53,7 +54,7 @@ void displayLocalWeather(bool reset) {
 
     if (!initialized) {
         tft.setTextColor(TFT_BLACK, TFT_WHITE);
-        extern bool isOnline;
+
         tft.fillScreen(TFT_WHITE);
         //  Заголовки и постоянные надписи
         // tft.setTextColor(TFT_BLUE, TFT_WHITE);
@@ -73,12 +74,11 @@ void displayLocalWeather(bool reset) {
             tft.setCursor(0, lineHeight * 13);
             tft.println(utf8rus("IP-адрес:"));
             tft.print(getIP());
-        }
-        /*else {
-            tft.setCursor(0, lineHeight * 13);
+        } else {
+            tft.setCursor(0, lineHeight * 14);
             tft.setTextColor(TFT_RED, TFT_WHITE);
-            tft.print(utf8rus("Оффлайн режим"));
-        }*/
+            tft.print(utf8rus("Офлайн режим"));
+        }
 
         initialized = true;
     }

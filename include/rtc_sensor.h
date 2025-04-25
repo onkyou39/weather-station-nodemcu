@@ -5,17 +5,16 @@
 #include <Arduino.h>
 
 class RtcSensor : public SensorBase {
-public:
+  public:
     void begin() override;
     void getTimeAndDate();
-    //void setTime(int hour, int minute, int second);
-    //void setDate(int day, int month, int year);
+    // void setTime(int hour, int minute, int second);
+    // void setDate(int day, int month, int year);
     void setTimeUnix(uint32_t unixTime);
     String getTime();
     String getDate();
 
-
-private:
+  private:
     String time;
     String date;
 };

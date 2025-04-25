@@ -2,7 +2,7 @@
 #include "config.h"
 
 // Функция для форматирования времени
-String parseTime(time_t utcTime, const char* format) {
+String parseTime(time_t utcTime, const char *format) {
     time_t localTime = utcTime + TIMEZONE_OFFSET;
     struct tm *timeinfo = localtime(&localTime);
 
