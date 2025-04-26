@@ -11,4 +11,5 @@ extern TFT_eSPI tft;
 void lcdInit();
 void displayApiWeather(const WeatherData &data);
 void displayLocalWeather(bool reset = false);
+void drawScreen(int screen);
 #endif

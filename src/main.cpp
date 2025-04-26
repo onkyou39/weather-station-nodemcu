@@ -6,7 +6,8 @@
 #include <Arduino.h>
 #include <OneButton.h>
 
-bool isOnline = false;
+bool isOnline = false; // Офлайн режим
+bool isConnected = false; // Статус подключения к WiFi
 const int buttonPin = D8;
 const int totalScreens = 2;
 int currentScreen = 0;
@@ -18,18 +19,6 @@ SensorManager sensors;
 WeatherData weatherData; // Структура с данными о погоде
 OneButton button(buttonPin, true, true);
 
-void drawScreen(int screen) {
-    switch (screen) {
-    case 0:
-        displayLocalWeather(true);      // Сброс экрана локальных данных
-        updateApiData(false);           // Устранение двойной отрисовки
-        displayApiWeather(weatherData); // Если данные не обновились, отрисовка старых
-        break;
-    case 1:
-        displayLocalWeather(); // перерисовка
-        break;
-    }
-}
 
 void handleClick() {
     currentScreen = (currentScreen + 1) % totalScreens;
@@ -51,10 +40,12 @@ void loop() {
     if (currentMillis - lastUpdate >= updateInterval) {
         lastUpdate = currentMillis;
 
-        if (!connectionStatus() && isOnline) {
+        isConnected = connectionStatus(); // Проверка подключения к WiFi
+
+        if (!isConnected && isOnline) {
             isOnline = false;
-            currentScreen = 1;         // Переход на экран с локальными данными
             displayLocalWeather(true); // Cброс экрана для отображения предупреждения о офлайн режиме
+            currentScreen = 1;         // Переход на экран с локальными данными
         }
 
         sensors.updateSensors();
@@ -65,12 +56,9 @@ void loop() {
             break;
 
         default:
-            updateApiData();
+            updateApiData(); // Отрисовка данных с API через интервал
             break;
         }
     }
-
-    if (isOnline) {
-        handleServer(); // обработка HTTP-запросов
-    }
+    if (isConnected) handleServer(); // обработка HTTP-запросов
 }

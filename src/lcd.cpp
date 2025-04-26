@@ -1,5 +1,6 @@
 #include "lcd.h"
 #include "sensor_manager.h"
+#include "weather_api.h"
 #include "weather_utils.h"
 #include "wifi_utils.h"
 
@@ -38,6 +39,7 @@ void displayApiWeather(const WeatherData &data) {
 void displayLocalWeather(bool reset) {
     static bool initialized = false;
     extern bool isOnline;
+    extern bool isConnected;
     extern SensorManager sensors;
     constexpr uint8_t lineHeight = 16; // Высота строки в пикселях при размере шрифта 2
 
@@ -74,11 +76,19 @@ void displayLocalWeather(bool reset) {
             tft.setCursor(0, lineHeight * 13);
             tft.println(utf8rus("IP-адрес:"));
             tft.print(getIP());
-        } else {
+        } else if (!isConnected) {
             tft.setCursor(0, lineHeight * 14);
             tft.setTextColor(TFT_RED, TFT_WHITE);
             tft.print(utf8rus("Офлайн режим"));
+        } else
+        {
+            tft.setCursor(0, lineHeight * 12);
+            tft.println(utf8rus("IP-адрес:"));
+            tft.println(getIP());
+            tft.setTextColor(TFT_RED, TFT_WHITE);
+            tft.print(utf8rus("Ошибка API"));
         }
+        
 
         initialized = true;
     }
@@ -105,4 +115,18 @@ void displayLocalWeather(bool reset) {
     tft.print("          ");
     tft.setCursor(0, lineHeight * 7);
     tft.print(String((int)light) + " lux");
+}
+
+void drawScreen(int screen) {
+    extern WeatherData weatherData;
+    switch (screen) {
+    case 0:
+        displayLocalWeather(true);      // Сброс экрана локальных данных
+        updateApiData(false);           // Устранение двойной отрисовки
+        displayApiWeather(weatherData); // Если данные не обновились, отрисовка старых
+        break;
+    case 1:
+        displayLocalWeather(); // перерисовка
+        break;
+    }
 }

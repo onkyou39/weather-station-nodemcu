@@ -183,6 +183,8 @@ bool fetchWeatherData() {
 
 // функция запроса через интервал
 bool updateApiData(bool drawIfUpdated) {
+    extern bool isOnline;
+    extern int currentScreen;
     JsonDocument doc;
     unsigned long currentTime = millis();
     if (currentTime - lastApiRequestTime >= apiUpdateInterval || lastApiRequestTime == 0) {
@@ -193,11 +195,13 @@ bool updateApiData(bool drawIfUpdated) {
         Serial.println("Updating data from API...");
         lastApiRequestTime = currentTime; // Сбрасываем время последнего запроса к API
 
-        if (!fetchWeatherData()) {
+        if (!fetchWeatherData() && isOnline) {
             tft.fillScreen(TFT_WHITE);
             tft.setTextColor(TFT_RED);
             tft.print(utf8rus("Ошибка получения данных"));
             delay(1000);
+            isOnline = false;
+            currentScreen = 1;
             Serial.println("Error updating data");
             return false;
         }
