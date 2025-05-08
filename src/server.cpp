@@ -53,3 +53,7 @@ void initServer() {
 void handleServer() {
     server.handleClient();
 }
+
+void stopServer() {
+    server.stop();
+}

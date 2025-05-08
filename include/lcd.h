@@ -1,6 +1,9 @@
 #ifndef LCD_H
 #define LCD_H
 
+#define DISABLE_ALL_LIBRARY_WARNINGS 1 // Отключение предупреждения библиотеки о неподключенном тачскрине
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations" // Отключение предупреждений об устаревшем api (SPIFFS)
+
 #include "time_utils.h"
 #include "utf8_converter.h"
 #include "weather_data.h"

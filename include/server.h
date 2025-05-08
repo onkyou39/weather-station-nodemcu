@@ -3,5 +3,6 @@
 
 void initServer();
 void handleServer();
+void stopServer();
 
 #endif

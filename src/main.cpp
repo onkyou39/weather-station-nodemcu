@@ -6,19 +6,18 @@
 #include <Arduino.h>
 #include <OneButton.h>
 
-bool isOnline = false; // Офлайн режим
+bool isOnline = false;    // Офлайн режим
 bool isConnected = false; // Статус подключения к WiFi
 const int buttonPin = D8;
 const int totalScreens = 2;
 int currentScreen = 0;
 unsigned long lastUpdate = 0;
-const unsigned long updateInterval = 1000; // 1 секунда
+const unsigned long updateInterval = 3000; // 3 секунды
 
 TFT_eSPI tft = TFT_eSPI();
 SensorManager sensors;
 WeatherData weatherData; // Структура с данными о погоде
-OneButton button(buttonPin, true, true);
-
+OneButton button;
 
 void handleClick() {
     currentScreen = (currentScreen + 1) % totalScreens;
@@ -26,26 +25,32 @@ void handleClick() {
 }
 
 void setup() {
+    button.setup(buttonPin, INPUT, false);
     button.attachClick(handleClick);
     sensors.begin();
     lcdInit();
     initServer();
     Serial.begin(115200);
     isOnline = connectToWiFi();
+    if (!isOnline) {
+        currentScreen = 1;
+        stopServer();
+    }
 }
 
 void loop() {
-    button.tick(); // обработка кнопки
+    button.tick(); // Обработка кнопки
     unsigned long currentMillis = millis();
     if (currentMillis - lastUpdate >= updateInterval) {
         lastUpdate = currentMillis;
 
         isConnected = connectionStatus(); // Проверка подключения к WiFi
 
-        if (!isConnected && isOnline) {
+        if (!isConnected && isOnline) { // Случай с отключением WiFi во время работы
             isOnline = false;
             displayLocalWeather(true); // Cброс экрана для отображения предупреждения о офлайн режиме
             currentScreen = 1;         // Переход на экран с локальными данными
+            stopServer();              // Выключение локального сервера
         }
 
         sensors.updateSensors();
@@ -60,5 +65,6 @@ void loop() {
             break;
         }
     }
-    if (isConnected) handleServer(); // обработка HTTP-запросов
+    if (isConnected)
+        handleServer(); // Обработка HTTP-запросов
 }

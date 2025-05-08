@@ -80,15 +80,13 @@ void displayLocalWeather(bool reset) {
             tft.setCursor(0, lineHeight * 14);
             tft.setTextColor(TFT_RED, TFT_WHITE);
             tft.print(utf8rus("Офлайн режим"));
-        } else
-        {
+        } else {
             tft.setCursor(0, lineHeight * 12);
             tft.println(utf8rus("IP-адрес:"));
             tft.println(getIP());
             tft.setTextColor(TFT_RED, TFT_WHITE);
             tft.print(utf8rus("Ошибка API"));
         }
-        
 
         initialized = true;
     }
