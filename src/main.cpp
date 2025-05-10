@@ -12,7 +12,7 @@ const int buttonPin = D8;
 const int totalScreens = 2;
 int currentScreen = 0;
 unsigned long lastUpdate = 0;
-const unsigned long updateInterval = 3000; // 3 секунды
+const unsigned long updateInterval = 5000; // 5 секунд
 
 TFT_eSPI tft = TFT_eSPI();
 SensorManager sensors;

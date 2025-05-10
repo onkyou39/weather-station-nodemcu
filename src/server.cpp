@@ -21,6 +21,7 @@ void handleRoot() {
     html += "<tr><td>Температура</td><td>" + String(sensors.getTemperature(), 1) + " &deg;C</td></tr>";
     html += "<tr><td>Влажность</td><td>" + String(sensors.getHumidity(), 1) + " %</td></tr>";
     html += "<tr><td>Освещённость</td><td>" + String((int)sensors.getLight()) + " lux</td></tr>";
+    html += "<tr><td>Атмосферное давление</td><td>" + String((int)sensors.getPressure()) + " мм рт. ст.</td></tr>";
     html += "</table>";
     html += "</body></html>";
 

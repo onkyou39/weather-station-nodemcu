@@ -72,6 +72,8 @@ void displayLocalWeather(bool reset) {
         // tft.setTextColor(TFT_CYAN, TFT_WHITE);
         tft.println(utf8rus("Освещенность:\n"));
 
+        tft.println(utf8rus("Атмосферное давление\n"));
+
         if (isOnline) {
             tft.setCursor(0, lineHeight * 13);
             tft.println(utf8rus("IP-адрес:"));
@@ -95,6 +97,7 @@ void displayLocalWeather(bool reset) {
     float temp = sensors.getTemperature();
     float humidity = sensors.getHumidity();
     float light = sensors.getLight();
+    float pressure = sensors.getPressure();
 
     // Температура с первого датчика
     tft.setCursor(0, lineHeight * 3); // 4 строка
@@ -113,6 +116,13 @@ void displayLocalWeather(bool reset) {
     tft.print("          ");
     tft.setCursor(0, lineHeight * 7);
     tft.print(String((int)light) + " lux");
+
+    // Давление
+    tft.setCursor(0, lineHeight * 9); // 10 строка
+    tft.print("                   ");
+    tft.setCursor(0, lineHeight * 9);
+    tft.print(String((int)pressure));
+    tft.print(utf8rus(" мм рт. ст."));
 }
 
 void drawScreen(int screen) {
