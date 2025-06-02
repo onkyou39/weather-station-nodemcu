@@ -10,7 +10,6 @@ class SensorManager {
   public:
     void begin();
     void updateSensors();
-
     float getTemperature();
     float getHumidity();
     float getLight();

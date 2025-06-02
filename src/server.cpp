@@ -1,9 +1,11 @@
 #include "server.h"
 #include "sensor_manager.h"
+#include "wifi_utils.h"
 #include <ESP8266WebServer.h>
 
 ESP8266WebServer server(80);
 extern SensorManager sensors;
+extern Config config;
 
 void handleRoot() {
     String html = R"rawliteral(
@@ -233,9 +235,52 @@ void handleNotFound() {
     server.send(404, "text/plain", message);
 }
 
+void handleConfigPage() {
+    server.send(200, "text/html", R"rawliteral(
+    <form action="/save" method="POST">
+      SSID: <input name="ssid"><br>
+      Password: <input type="password" name="pass"><br>
+      API Key: <input type="password" name="api"><br>
+      Latitude: <input name="lat"><br>
+      Longitude: <input name="lon"><br>
+      <input type="submit" value="Save">
+    </form>
+  )rawliteral");
+}
+
+void handleSaveConfig() {
+    strncpy(config.ssid, server.arg("ssid").c_str(), sizeof(config.ssid));
+    strncpy(config.password, server.arg("pass").c_str(), sizeof(config.password));
+    strncpy(config.apiKey, server.arg("api").c_str(), sizeof(config.apiKey));
+    strncpy(config.latitude, server.arg("lat").c_str(), sizeof(config.latitude));
+    strncpy(config.longitude, server.arg("lon").c_str(), sizeof(config.longitude));
+    config.isValid = true;
+
+    saveConfigToEEPROM();
+
+    server.send(200, "text/html", "<h1>Config saved. Restarting...</h1>");
+    delay(1000);
+    WiFi.mode(WIFI_STA);
+    ESP.restart();
+}
+
+void startConfigPortal() {
+  WiFi.mode(WIFI_AP);
+  WiFi.softAP("WeatherStation_Config", "12345678");
+
+  server.on("/", handleRoot);
+  server.on("/save", handleSaveConfig);
+  server.begin();
+  while (true) {
+      server.handleClient();
+  }
+}
+
 void initServer() {
     server.on("/", handleRoot);
     server.on("/manual", handleManual);
+    server.on("/config", handleConfigPage);
+    server.on("/save", handleSaveConfig);
     server.begin();
     server.onNotFound(handleNotFound);
 }

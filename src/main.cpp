@@ -10,12 +10,14 @@ bool isOnline = false;    // Офлайн режим
 bool isConnected = false; // Статус подключения к WiFi
 const int buttonPin = D8;
 const int totalScreens = 2;
+const int EEPROM_SIZE = 512;
 int currentScreen = 0;
 unsigned long lastUpdate = 0;
 const unsigned long updateInterval = 5000; // 5 секунд
 
 TFT_eSPI tft = TFT_eSPI();
 SensorManager sensors;
+Config config;
 WeatherData weatherData; // Структура с данными о погоде
 OneButton button;
 
