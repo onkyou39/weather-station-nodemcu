@@ -14,6 +14,7 @@ extern WeatherData weatherData; // Структура с данными о по�
 JsonDocument ApiRequest() {
     auto client = std::make_unique<BearSSL::WiFiClientSecure>();
     client->setInsecure(); // отключаем проверку SSL
+    client->setBufferSizes(1024, 1024); // Ограничение размера буфера SSL, чинит ошибку read timeout
     HTTPClient https;
     https.useHTTP10(true);   // запрет chunked mode, принудительный HTTP 1.0
     https.setTimeout(15000); // фикс ошибки IncompleteInput, таймаут потока на 15 секунд
