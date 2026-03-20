@@ -1,5 +1,6 @@
 #include "server.h"
 #include "sensor_manager.h"
+#include <ArduinoJson.h>
 #include <ESP8266WebServer.h>
 
 ESP8266WebServer server(80);
@@ -233,8 +234,24 @@ void handleNotFound() {
     server.send(404, "text/plain", message);
 }
 
+void handleAPIAll() {
+    JsonDocument doc;
+    doc["timestamp"] = millis();
+
+    JsonObject sensors_data = doc["sensors"].to<JsonObject>();
+    sensors_data["temperature_c"] = sensors.getTemperature();
+    sensors_data["humidity_percent"] = sensors.getHumidity();
+    sensors_data["light_lux"] = sensors.getLight();
+    sensors_data["pressure_mmhg"] = sensors.getPressure();
+
+    String response;
+    serializeJson(doc, response);
+    server.send(200, "application/json", response);
+}
+
 void initServer() {
     server.on("/", handleRoot);
+    server.on("/api/sensors/all", handleAPIAll);
     server.on("/manual", handleManual);
     server.begin();
     server.onNotFound(handleNotFound);
