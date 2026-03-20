@@ -3,6 +3,7 @@
 
 void initServer();
 void handleServer();
+void handleAPIAll();
 void stopServer();
 
 #endif
